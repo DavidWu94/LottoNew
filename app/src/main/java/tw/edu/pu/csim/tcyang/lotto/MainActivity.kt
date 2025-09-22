@@ -42,7 +42,7 @@ fun Play(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxSize()
-            // 監聽整個 Box 的點擊事件，但不吃掉 Button 的事件
+            // 外層只管顯示座標
             .pointerInput(Unit) {
                 detectTapGestures { offset: Offset ->
                     Toast.makeText(
@@ -54,12 +54,34 @@ fun Play(modifier: Modifier = Modifier) {
             },
         contentAlignment = Alignment.Center
     ) {
-
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text(text = "樂透數字(1-100)為 $lucky")
+            // Text 獨立處理短按 & 長按
+            Text(
+                text = "樂透數字(1-100)為 $lucky",
+                modifier = Modifier.pointerInput(Unit) {
+                    detectTapGestures(
+                        onTap = {
+                            lucky = (lucky - 1).coerceAtLeast(1)
+                            Toast.makeText(
+                                context,
+                                "短按：樂透碼減 1，目前數字 $lucky",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        },
+                        onLongPress = {
+                            lucky = (lucky + 1).coerceAtMost(100)
+                            Toast.makeText(
+                                context,
+                                "長按：樂透碼加 1，目前數字 $lucky",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    )
+                }
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
